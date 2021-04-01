@@ -61,10 +61,10 @@ overshoot_bdy_loc = 'any'   !  Possible values: bottom, top, any`
 overshoot_f = 0.345
 overshoot_f0 = 0.01
 
-! report_ierr = .true.
+report_ierr = .true.
 
 ! use_other_kap = .true.
-use_other_eos = .true.
+use_other_eos = .false.
 !  okay_to_reduce_gradT_excess = .true.
 
 / ! end of controls namelist

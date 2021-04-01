@@ -9,7 +9,7 @@
 !   by the free software foundation; either version 2 of the license, or
 !   (at your option) any later version.
 !
-!   mesa is distributed in the hope that it will be useful, 
+!   mesa is distributed in the hope that it will be useful,
 !   but without any warranty; without even the implied warranty of
 !   merchantability or fitness for a particular purpose.  see the
 !   gnu library general public license for more details.
@@ -19,7 +19,7 @@
 !   foundation, inc., 59 temple place, suite 330, boston, ma 02111-1307 usa
 !
 ! ***********************************************************************
- 
+
       module run_star_extras
 
       use star_lib
@@ -27,9 +27,9 @@
       use const_def
       use math_lib
       ! use eos_lib
-      
+
       implicit none
-      
+
       ! these routines are called by the standard run_star check_model
       contains
       subroutine extras_controls(id, ierr)
@@ -39,7 +39,7 @@
          ierr = 0
          call star_ptr(id, s, ierr)
          if (ierr /= 0) return
-         
+
          ! this is the place to set any procedure pointers you want to change
          ! e.g., other_wind, other_mixing, other_energy  (see star_data.inc)
 
@@ -58,14 +58,14 @@
          s% how_many_extra_history_columns => how_many_extra_history_columns
          s% data_for_extra_history_columns => data_for_extra_history_columns
          s% how_many_extra_profile_columns => how_many_extra_profile_columns
-         s% data_for_extra_profile_columns => data_for_extra_profile_columns  
+         s% data_for_extra_profile_columns => data_for_extra_profile_columns
 
          s% how_many_extra_history_header_items => how_many_extra_history_header_items
          s% data_for_extra_history_header_items => data_for_extra_history_header_items
          s% how_many_extra_profile_header_items => how_many_extra_profile_header_items
          s% data_for_extra_profile_header_items => data_for_extra_profile_header_items
          s% other_kap_get => artificially_high_Z_kap_get
-      
+
 
       ! edit the extras_controls routine to set the procedure pointers
       ! e.g.,
@@ -79,8 +79,8 @@
 
 
 end subroutine extras_controls
-      
-      
+
+
 ! kap subroutine.
          subroutine artificially_high_Z_kap_get( &
                id, k, handle, zbar, X, Z, Zbase, XC, XN, XO, XNe, &
@@ -102,7 +102,7 @@ end subroutine extras_controls
             real(dp), intent(in) :: log10_T ! temperature
             real(dp), intent(in) :: lnfree_e, d_lnfree_e_dlnRho, d_lnfree_e_dlnT
                ! free_e := total combined number per nucleon of free electrons and positrons
-            
+
             ! define new variables
             ! real(dp) :: Z_mod, Zbase_mod, XC_mod, XN_mod, XO_mod, XNe_mod
 
@@ -127,7 +127,7 @@ end subroutine extras_controls
 
 !  write(*,*) 'no implementation for other_kap_get'
 !  ierr = -1
-! ####################### 
+! #######################
             ! try hardcode these from the initial values of the high Z models
             ! Z, Zbase, XC, XN, XO, XNe
             ! Z_mod = 0.04869562
@@ -156,44 +156,44 @@ end subroutine extras_controls
 ! eos routine begins.
 
       subroutine my_eosDT_get( &
-              id, k, handle, Z, X, abar, zbar, & 
+              id, k, handle, Z, X, abar, zbar, &
               species, chem_id, net_iso, xa, &
-              Rho, log10Rho, T, log10T, & 
+              Rho, log10Rho, T, log10T, &
               res, d_dlnRho_const_T, d_dlnT_const_Rho, &
               d_dabar_const_TRho, d_dzbar_const_TRho, ierr)
-         ! use const_def, only: dp        
+         ! use const_def, only: dp
 
          ! INPUT
          use chem_def, only: num_chem_isos
-         use eos_lib         
+         use eos_lib
          integer, intent(in) :: id ! star id if available; 0 otherwise
-         integer, intent(in) :: k ! cell number or 0 if not for a particular cell         
+         integer, intent(in) :: k ! cell number or 0 if not for a particular cell
          integer, intent(in) :: handle ! eos handle
 
          real(dp), intent(in) :: Z ! the metals mass fraction
          real(dp), intent(in) :: X ! the hydrogen mass fraction
          ! real(dp) :: Z
- 
+
          real(dp), intent(in) :: abar
             ! mean atomic number (nucleons per nucleus; grams per mole)
          real(dp), intent(in) :: zbar ! mean charge per nucleus
 
 
          real(dp), intent(in) :: xa(:), Rho, log10Rho, T, log10T
-         
+
          integer, intent(in) :: species
          integer, pointer :: chem_id(:) ! maps species to chem id
          integer, pointer :: net_iso(:) ! maps chem id to species number
-            
+
          real(dp) :: eos_z, eos_x, Pgas, Prad, energy, entropy
 
          ! OUTPUT
-         
+
          real(dp), intent(inout) :: res(:) ! (num_eos_basic_results)
-         real(dp), intent(inout) :: d_dlnRho_const_T(:) ! (num_eos_basic_results)  
-         real(dp), intent(inout) :: d_dlnT_const_Rho(:) ! (num_eos_basic_results) 
-         real(dp), intent(inout) :: d_dabar_const_TRho(:) ! (num_eos_basic_results) 
-         real(dp), intent(inout) :: d_dzbar_const_TRho(:) ! (num_eos_basic_results) 
+         real(dp), intent(inout) :: d_dlnRho_const_T(:) ! (num_eos_basic_results)
+         real(dp), intent(inout) :: d_dlnT_const_Rho(:) ! (num_eos_basic_results)
+         real(dp), intent(inout) :: d_dabar_const_TRho(:) ! (num_eos_basic_results)
+         real(dp), intent(inout) :: d_dzbar_const_TRho(:) ! (num_eos_basic_results)
 
          integer, intent(out) :: ierr ! 0 means AOK.
 
@@ -206,7 +206,7 @@ end subroutine extras_controls
          ! print *, s% gamma_law_hydro, ">0?"
          ! print *, s% use_eosDT_ideal_gas, "true?"
          ! print *, s% use_eosDT_HELMEOS, "true?"
-         
+
          ! res = 0
          ! d_dlnRho_const_T = 0
          ! d_dlnT_const_Rho = 0
@@ -222,7 +222,7 @@ end subroutine extras_controls
             handle, eos_z, eos_x, abar, zbar, &
             species, chem_id, net_iso, xa, &
             Rho, log10Rho, T, log10T, &
-            res, d_dlnRho_const_T, d_dlnT_const_Rho, & 
+            res, d_dlnRho_const_T, d_dlnT_const_Rho, &
             d_dabar_const_TRho, d_dzbar_const_TRho, ierr)
 
       end subroutine my_eosDT_get
@@ -236,7 +236,7 @@ end subroutine extras_controls
                   logRho_result, res, d_dlnRho_const_T, d_dlnT_const_Rho, &
                   d_dabar_const_TRho, d_dzbar_const_TRho, &
                   eos_calls, ierr)
-    
+
             ! finds log10 Rho given values for temperature and 'other', and initial guess for density.
             ! does up to max_iter attempts until logRho changes by less than tol.
 
@@ -247,7 +247,7 @@ end subroutine extras_controls
             use const_def, only: dp
 
             integer, intent(in) :: id ! star id if available; 0 otherwise
-            integer, intent(in) :: k ! cell number or 0 if not for a particular cell    
+            integer, intent(in) :: k ! cell number or 0 if not for a particular cell
             integer, intent(in) :: handle
 
             real(dp), intent(in) :: Z ! the metals mass fraction
@@ -343,9 +343,9 @@ end subroutine extras_controls
 
             real(dp), intent(in) :: T, log10T ! the temperature
                ! provide both if you have them.  else pass one and set the other to arg_not_provided
-     
+
             type (EoS_General_Info), pointer :: rq
-    
+
             ! OUTPUT
 
             real(dp), intent(out) :: Rho, log10Rho ! density
@@ -359,10 +359,10 @@ end subroutine extras_controls
             ! d_dlnT_const_Rho(i) = d(res(i))/dlnT|Rho
             real(dp), intent(inout) :: d_dabar_const_TRho(:) ! (num_eos_basic_results)
             real(dp), intent(inout) :: d_dzbar_const_TRho(:) ! (num_eos_basic_results)
-            
+
 
             integer, intent(out) :: ierr ! 0 means AOK.
-          call eos_ptr(handle,rq,ierr)  
+          call eos_ptr(handle,rq,ierr)
 
           call eosPT_get( &
                handle, Z, X, abar, zbar, &
@@ -391,7 +391,7 @@ end subroutine extras_controls
          call star_ptr(id, s, ierr)
          if (ierr /= 0) return
       end subroutine extras_startup
-      
+
 
       integer function extras_start_step(id)
          integer, intent(in) :: id
@@ -401,6 +401,11 @@ end subroutine extras_controls
          call star_ptr(id, s, ierr)
          if (ierr /= 0) return
          extras_start_step = 0
+
+         if (s% model_number >=2) then
+            s% use_other_eos = .true.
+            print *, "flip EOS"
+         end if
       end function extras_start_step
 
 
@@ -412,7 +417,7 @@ end subroutine extras_controls
          ierr = 0
          call star_ptr(id, s, ierr)
          if (ierr /= 0) return
-         extras_check_model = keep_going         
+         extras_check_model = keep_going
          if (.false. .and. s% star_mass_h1 < 0.35d0) then
             ! stop when star hydrogen mass drops to specified level
             extras_check_model = terminate
@@ -443,8 +448,8 @@ end subroutine extras_controls
          if (ierr /= 0) return
          how_many_extra_history_columns = 3
       end function how_many_extra_history_columns
-   
-      ! I started editing here.      
+
+      ! I started editing here.
       subroutine data_for_extra_history_columns(id, n, names, vals, ierr)
 
    use math_lib, only: safe_log10
@@ -473,18 +478,18 @@ end subroutine extras_controls
    f_tot = 0
    do i = s% nz, 1, -1
       if (s% mixing_type(i) == 0) then
-         f_rad = s% L(i) / (4 * pi * (s% r(i) ** 2)) 
+         f_rad = s% L(i) / (4 * pi * (s% r(i) ** 2))
 	 kap_ave = kap_ave + f_rad * s% opacity(i)
          f_tot = f_tot + f_rad
-      endif       
+      endif
    end do
 
-   ! kap_ave = kap_ave / f_tot  
- 
+   ! kap_ave = kap_ave / f_tot
+
    ! print *, mu_ave
    names(1) = "mu_int"
    ! vals(1) = mu_ave / SUM(s% dm,DIM=1)
-   vals(1) = mu_ave / (s% star_mass * msol) 
+   vals(1) = mu_ave / (s% star_mass * msol)
 
    names(2) = "mu_tot"
    vals(2) = mu_ave
@@ -504,8 +509,8 @@ end subroutine data_for_extra_history_columns
          if (ierr /= 0) return
          how_many_extra_profile_columns = 0
       end function how_many_extra_profile_columns
-      
-      
+
+
       subroutine data_for_extra_profile_columns(id, n, nz, names, vals, ierr)
          integer, intent(in) :: id, n, nz
          character (len=maxlen_profile_column_name) :: names(n)
@@ -516,7 +521,7 @@ end subroutine data_for_extra_history_columns
          ierr = 0
          call star_ptr(id, s, ierr)
          if (ierr /= 0) return
-         
+
          ! note: do NOT add the extra names to profile_columns.list
          ! the profile_columns.list is only for the built-in profile column options.
          ! it must not include the new column names you are adding here.
@@ -527,7 +532,7 @@ end subroutine data_for_extra_history_columns
          !do k = 1, nz
          !   vals(k,1) = s% Pgas(k)/s% P(k)
          !end do
-         
+
       end subroutine data_for_extra_profile_columns
 
 
@@ -600,7 +605,7 @@ end subroutine data_for_extra_history_columns
          if (ierr /= 0) return
          extras_finish_step = keep_going
 
-         ! to save a profile, 
+         ! to save a profile,
             ! s% need_to_save_profiles_now = .true.
          ! to update the star log,
             ! s% need_to_update_history_now = .true.
@@ -609,8 +614,8 @@ end subroutine data_for_extra_history_columns
          ! by default, indicate where (in the code) MESA terminated
          if (extras_finish_step == terminate) s% termination_code = t_extras_finish_step
       end function extras_finish_step
-      
-      
+
+
       subroutine extras_after_evolve(id, ierr)
          integer, intent(in) :: id
          integer, intent(out) :: ierr
@@ -620,6 +625,6 @@ end subroutine data_for_extra_history_columns
          if (ierr /= 0) return
       end subroutine extras_after_evolve
 
-      
-      
+
+
       end module run_star_extras
