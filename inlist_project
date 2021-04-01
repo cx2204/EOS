@@ -13,7 +13,7 @@ pgstar_flag = .true.
 ! save_model_filename = 'ZAMS-ze-4.mod'
 ! required_termination_code_string = ''
 load_saved_model = .true.
-saved_model_name = 'undefined'
+saved_model_name = 'ZAMS_model.mod'
 
 change_Y = .true.
 new_Y = 0.2499
@@ -31,7 +31,7 @@ Zbase = 1d-4
 initial_z = 1d-4 ! 0.02d0 default
 ! initial_y = 0.23d0
 
-  ! stop when the star nears ZAMS (Lnuc/L > 0.99)
+! stop when the star nears ZAMS (Lnuc/L > 0.99)
 !  Lnuc_div_L_zams_limit = 0.99d0
 !  stop_near_zams = .true.
 
