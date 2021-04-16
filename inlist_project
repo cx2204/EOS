@@ -20,6 +20,11 @@ new_Y = 0.2499
 ! change_Z = .true.
 ! new_Z = 1d-4
 
+list_net_reactions = .true.
+
+
+
+
 / !end of star_job namelist
 
 &controls
@@ -64,7 +69,8 @@ overshoot_f0 = 0.01
 report_ierr = .true.
 
 ! use_other_kap = .true.
-use_other_eos = .false.
-!  okay_to_reduce_gradT_excess = .true.
+! use_other_eos = .false.
+! okay_to_reduce_gradT_excess = .true.
+! use_other_energy = .true.
 
 / ! end of controls namelist

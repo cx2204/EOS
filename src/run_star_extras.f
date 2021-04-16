@@ -67,18 +67,36 @@
          s% other_kap_get => artificially_high_Z_kap_get
 
 
-      ! edit the extras_controls routine to set the procedure pointers
-      ! e.g.,
-         s% other_eosDT_get => my_eosDT_get
-         s% other_eosDT_get_Rho => my_eosDT_get_Rho
-         s% other_eosPT_get => my_eosPT_get
+       ! edit the extras_controls routine to set the procedure pointers
+       ! e.g.,
+       ! s% other_eosDT_get => my_eosDT_get
+       ! s% other_eosDT_get_Rho => my_eosDT_get_Rho
+       ! s% other_eosPT_get => my_eosPT_get
        !  s% other_eosDT_get_T => my_eosDT_get_T
        !  s% other_eosPT_get_T => my_eosPT_get_T
        !  s% other_eosPT_get_Pgas => my_eosPT_get_Pgas
        !  s% other_eosPT_get_Pgas_for_Rho => my_eosPT_get_Pgas_for_Rho
-
+       ! s% other_energy => my_energy
 
 end subroutine extras_controls
+
+
+
+      subroutine my_energy(id, ierr)
+         use const_def, only: Rsun
+         integer, intent(in) :: id
+         integer, intent(out) :: ierr
+         type (star_info), pointer :: s
+         integer :: k
+         ierr = 0
+         call star_ptr(id, s, ierr)
+         if (ierr /= 0) return
+         s% extra_heat(:) = s% extra_power_source
+         return
+      end subroutine my_energy
+
+
+
 
 
 ! kap subroutine.
