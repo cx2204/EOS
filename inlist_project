@@ -17,10 +17,9 @@ saved_model_name = 'ZAMS_model.mod'
 
 change_Y = .true.
 new_Y = 0.2499
-! change_Z = .true.
-! new_Z = 1d-4
 
-list_net_reactions = .true.
+
+! list_net_reactions = .true.
 
 
 
@@ -68,6 +67,7 @@ overshoot_f0 = 0.01
 
 report_ierr = .true.
 
+! use_other_net_get = .true.
 ! use_other_kap = .true.
 ! use_other_eos = .false.
 ! okay_to_reduce_gradT_excess = .true.
