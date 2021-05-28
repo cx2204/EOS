@@ -634,15 +634,15 @@
    !## mass fractions near center
 
       ! the following controls automatically add columns for all of the isos that are in the current net
-      !add_center_abundances
+      add_center_abundances
       !add_log_center_abundances
 
       ! individual central mass fractions (as many as desired)
-      center h1
-      center he4
-      center c12
-      center o16
-      center fe56
+      ! center h1
+      ! center he4
+      ! center c12
+      ! center o16
+      ! center fe56
 
       ! individual log10 central mass fractions (as many as desired)
       !log_center h1
