@@ -130,13 +130,12 @@ end subroutine extras_controls
 ! ####################### 
             ! try hardcode these from the initial values of the high Z models
             ! Z, Zbase, XC, XN, XO, XNe
-            Z_mod = 0.0194233
-            Z_mod = max(0.02,Z)
-            Zbase_mod = 0.02
-            XC_mod = 0.000192781
-            XN_mod = 0.0126259
-            XO_mod = 0.0004148
-            XNe_mod = 0.00209946
+            Z_mod = max(0.04000000000000914,Z)
+            Zbase_mod =  0.04
+            XC_mod = 0.00688321465135668
+            XN_mod = 0.002016317041128345
+            XO_mod = 0.018720898559548563
+            XNe_mod = 0.004198920956668217
 
             ! this you want to evolve
             ! X
@@ -221,11 +220,19 @@ end subroutine extras_controls
 	 r_metal = 2.0
 	 metals = SUM(x(4:))
 	 z_high = r_metal * metals
-	 r_nonmetal = (1 - metals) / (1 - z_high) 
-	 if (z_high > metals) then	
-	 	x_new = [x(:3) / r_nonmetal, x(4:) * r_metal]
-	 endif
-	
+
+         ! !!!! routine that changes both H and He abundances
+         r_nonmetal = (1 - metals) / (1 - z_high)
+         if (z_high > metals) then
+                x_new = [x(:3) / r_nonmetal, x(4:) * r_metal]
+         endif
+
+         ! !!!! routine that only changes H but not He
+         ! r_h = (1 - z_high - x(2) - x(3)) / x(1)
+         ! if (z_high > metals) then
+         !       x_new = [x(1) * r_h, x(2), x(3), x(4:) * r_metal]
+         ! endif
+
 	 num_nucleon = (/1,3,4,12,14,16,20,24/) ! A(i)
 	 num_charge = (/1,2,2,6,7,8,10,12/) ! Z(i)
          num_charge_sq = (/1,4,4,36,49,64,100,144/) ! Z(i)^2
@@ -313,7 +320,7 @@ end subroutine extras_controls
          ! print *, z
          ! print *, res
 
-         Z_mod = max(0.02,Z)
+         Z_mod = max(0.04,Z)
          ! print *, Z_mod
 
        call eosDT_get( &
@@ -633,59 +640,88 @@ end subroutine extras_controls
          ierr = 0
          call star_ptr(id, s, ierr)
          if (ierr /= 0) return
-         how_many_extra_history_columns = 3
+         how_many_extra_history_columns = 4
       end function how_many_extra_history_columns
    
-      ! I started editing here.      
+         ! I started editing here.     
       subroutine data_for_extra_history_columns(id, n, names, vals, ierr)
 
-   use math_lib, only: safe_log10
+           use math_lib, only: safe_log10
+           use chem_def, only: ih1
 
-   integer, intent(in) :: id, n
-   character (len=maxlen_history_column_name) :: names(n)
-   real(dp) :: vals(n)
-   integer, intent(out) :: ierr
-   type (star_info), pointer :: s
+           integer, intent(in) :: id, n
+           character (len=maxlen_history_column_name) :: names(n)
+           real(dp) :: vals(n)
+           integer, intent(out) :: ierr
+           type (star_info), pointer :: s
 
-   integer :: i
-   real(dp) :: mu_ave ! mass average mean molecular weight
-   real(dp) :: kap_ave ! flux averaged opacity in radiative region
-   real(dp) :: f_rad, f_tot
+           integer :: i
+           real(dp) :: mu_ave ! mass average mean molecular weight
+           real(dp) :: kap_ave ! flux averaged opacity in radiative region
+           real(dp) :: f_rad, f_tot, m_conv_tot, aux_var
 
-   ierr = 0
-   call star_ptr(id, s, ierr)
-   if (ierr /= 0) return
+           ierr = 0
+           call star_ptr(id, s, ierr)
+           if (ierr /= 0) return
 
-   mu_ave = 0
-   do i = s% nz, 1, -1
-      mu_ave = mu_ave + s% mu(i) * s% dm(i)
-   end do
+           mu_ave = 0
+           do i = s% nz, 1, -1
+              mu_ave = mu_ave + s% mu(i) * s% dm(i)
+           end do
 
-   kap_ave = 0
-   f_tot = 0
-   do i = s% nz, 1, -1
-      if (s% mixing_type(i) == 0) then
-         f_rad = s% L(i) / (4 * pi * (s% r(i) ** 2)) 
-	 kap_ave = kap_ave + f_rad * s% opacity(i)
-         f_tot = f_tot + f_rad
-      endif       
-   end do
+           kap_ave = 0
+           f_tot = 0
+           do i = s% nz, -1, 1
+              if (s% mixing_type(i) == 0) then
+                 f_rad = s% L(i) / (4 * pi * (s% r(i) ** 2))
+                 kap_ave = kap_ave + f_rad * s% opacity(i)
+                 f_tot = f_tot + f_rad
+              endif      
+           end do
 
-   ! kap_ave = kap_ave / f_tot  
- 
-   ! print *, mu_ave
-   names(1) = "mu_int"
-   ! vals(1) = mu_ave / SUM(s% dm,DIM=1)
-   vals(1) = mu_ave / (s% star_mass * msol) 
+           ! r_conv_tot = 0
 
-   names(2) = "mu_tot"
-   vals(2) = mu_ave
+           aux_var = 0
+           m_conv_tot = 0
+           ! if (s% xa(s% net_iso(ih1), s% nz) > 0.6) then
+           do i = 1, s% nz, 1
+                if (s% xa(s% net_iso(ih1), i) > 0.6) then
+                        if (s% mixing_type(i) == 1) then
+                                m_conv_tot = m_conv_tot + s% dm(i)
+                        aux_var = 0
+                        else
+                                aux_var = aux_var + s% dm(i)
+                        endif
+                else
+                        exit
+                endif
 
-   names(3) = "kap_ave"
-   vals(3) = kap_ave / f_tot
+                if (aux_var >= 3 * msol) then
+                        exit
+                endif
+           end do
 
-   ierr = 0
-end subroutine data_for_extra_history_columns
+
+           ! endif
+           ! kap_ave = kap_ave / f_tot
+
+           ! print *, mu_ave
+           names(1) = "mu_int"
+           ! vals(1) = mu_ave / SUM(s% dm,DIM=1)
+           vals(1) = mu_ave / (s% star_mass * msol)
+
+           names(2) = "mu_tot"
+           vals(2) = mu_ave
+
+           names(3) = "kap_ave"
+           vals(3) = kap_ave / f_tot
+
+           names(4) = "m_conv_tot"
+           vals(4) = m_conv_tot
+
+           ierr = 0
+      end subroutine data_for_extra_history_columns
+
 
       integer function how_many_extra_profile_columns(id)
          integer, intent(in) :: id
